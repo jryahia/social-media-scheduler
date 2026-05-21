@@ -37,7 +37,7 @@ def build_platform_badge(platform: Platform) -> ft.Container:
             ft.Text(emoji, size=12),
             ft.Text(platform.value.capitalize(), size=10, weight=ft.FontWeight.W_600, color=Theme.TEXT_PRIMARY),
         ], spacing=4, alignment=ft.MainAxisAlignment.CENTER),
-        padding=ft.padding.symmetric(horizontal=8, vertical=3),
+        padding=ft.Padding.symmetric(horizontal=8, vertical=3),
         bgcolor=color + "22",
         border_radius=4,
     )
@@ -48,7 +48,7 @@ def build_status_badge(status: PostStatus) -> ft.Container:
     color = get_status_color(status)
     return ft.Container(
         content=ft.Text(status.value.upper(), size=9, weight=ft.FontWeight.W_600, color=color),
-        padding=ft.padding.symmetric(horizontal=6, vertical=2),
+        padding=ft.Padding.symmetric(horizontal=6, vertical=2),
         bgcolor=color + "22",
         border_radius=4,
     )
@@ -109,7 +109,7 @@ def build_post_card(post: ScheduledPost, on_click: Optional[Callable] = None,
         ], spacing=4),
         padding=10,
         bgcolor=Theme.BG_CARD,
-        border=ft.border.all(1, Theme.BORDER),
+        border=ft.Border.all(1, Theme.BORDER),
         border_radius=8,
         ink=True,
         on_click=lambda _: on_click(post) if on_click else None,
@@ -295,7 +295,7 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
         ], spacing=8),
         padding=14,
         bgcolor=Theme.BG_CARD,
-        border=ft.border.all(1, Theme.BORDER),
+        border=ft.Border.all(1, Theme.BORDER),
         border_radius=8,
     )
 
@@ -312,7 +312,7 @@ def build_analytics_card(label: str, value: str, icon: str) -> ft.Container:
         ], spacing=4),
         padding=12,
         bgcolor=Theme.BG_CARD,
-        border=ft.border.all(1, Theme.BORDER),
+        border=ft.Border.all(1, Theme.BORDER),
         border_radius=8,
         expand=True,
     )
@@ -325,7 +325,7 @@ def build_status_bar(text: str) -> ft.Container:
             ft.Icon(ft.icons.CIRCLE, size=8, color=Theme.ACCENT_GREEN),
             ft.Text(text, size=10, color=Theme.TEXT_SECONDARY),
         ], spacing=4),
-        padding=ft.padding.symmetric(horizontal=12, vertical=6),
+        padding=ft.Padding.symmetric(horizontal=12, vertical=6),
         bgcolor=Theme.BG_CARD,
-        border=ft.border.only(top=ft.BorderSide(1, Theme.BORDER)),
+        border=ft.Border.only(top=ft.BorderSide(1, Theme.BORDER)),
     )

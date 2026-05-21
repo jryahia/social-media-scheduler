@@ -130,9 +130,9 @@ class SocialSchedulerApp:
                         ft.Container(expand=True),
                         self.scheduler_status,
                     ]),
-                    padding=ft.padding.symmetric(horizontal=20, vertical=10),
+                    padding=ft.Padding.symmetric(horizontal=20, vertical=10),
                     bgcolor=Theme.BG_DARK,
-                    border=ft.border.only(bottom=ft.BorderSide(1, Theme.BORDER)),
+                    border=ft.Border.only(bottom=ft.BorderSide(1, Theme.BORDER)),
                 ),
                 # Tabs
                 ft.Container(content=tabs, expand=True),
@@ -252,7 +252,7 @@ class SocialSchedulerApp:
                         self.pending_header,
                         ft.Container(content=self.pending_list_view, height=200),
                     ]),
-                    padding=ft.padding.symmetric(horizontal=4, vertical=4),
+                    padding=ft.Padding.symmetric(horizontal=4, vertical=4),
                 ),
                 ft.Divider(color=Theme.BORDER, height=1),
                 # Posting section
@@ -261,7 +261,7 @@ class SocialSchedulerApp:
                         self.posting_header,
                         ft.Container(content=self.posting_list_view, height=100),
                     ]),
-                    padding=ft.padding.symmetric(horizontal=4, vertical=4),
+                    padding=ft.Padding.symmetric(horizontal=4, vertical=4),
                 ),
                 ft.Divider(color=Theme.BORDER, height=1),
                 # History section
@@ -271,7 +271,7 @@ class SocialSchedulerApp:
                         ft.Container(content=self.history_list_view, expand=True),
                     ]),
                     expand=True,
-                    padding=ft.padding.symmetric(horizontal=4, vertical=4),
+                    padding=ft.Padding.symmetric(horizontal=4, vertical=4),
                 ),
             ], spacing=4),
             expand=True,
@@ -408,7 +408,7 @@ class SocialSchedulerApp:
                         ft.Container(expand=True),
                         ft.Text(format_time_ago(posted), size=10, color=Theme.TEXT_MUTED),
                     ]),
-                    padding=ft.padding.symmetric(horizontal=4, vertical=2),
+                    padding=ft.Padding.symmetric(horizontal=4, vertical=2),
                 )
             )
         if not recent:
@@ -435,12 +435,12 @@ class SocialSchedulerApp:
                         ft.Container(expand=True),
                         ft.Container(
                             content=ft.Text(str(count), size=12, weight=ft.FontWeight.W_600, color=Theme.TEXT_PRIMARY),
-                            padding=ft.padding.symmetric(horizontal=8, vertical=2),
+                            padding=ft.Padding.symmetric(horizontal=8, vertical=2),
                             bgcolor=color + "22",
                             border_radius=4,
                         ),
                     ]),
-                    padding=ft.padding.symmetric(vertical=3),
+                    padding=ft.Padding.symmetric(vertical=3),
                 )
             )
         if not per_platform:
@@ -595,7 +595,7 @@ class SocialSchedulerApp:
                     ]),
                     padding=8,
                     bgcolor=Theme.BG_CARD,
-                    border=ft.border.all(1, Theme.BORDER),
+                    border=ft.Border.all(1, Theme.BORDER),
                     border_radius=8,
                 ),
                 # Platform accounts
@@ -618,7 +618,7 @@ class SocialSchedulerApp:
                     ]),
                     padding=8,
                     bgcolor=Theme.BG_CARD,
-                    border=ft.border.all(1, Theme.BORDER),
+                    border=ft.Border.all(1, Theme.BORDER),
                     border_radius=8,
                     expand=True,
                 ),
@@ -645,7 +645,7 @@ class SocialSchedulerApp:
                     ]),
                     padding=8,
                     bgcolor=Theme.BG_CARD,
-                    border=ft.border.all(1, Theme.BORDER),
+                    border=ft.Border.all(1, Theme.BORDER),
                     border_radius=8,
                 ),
                 # About
@@ -658,7 +658,7 @@ class SocialSchedulerApp:
                     ]),
                     padding=8,
                     bgcolor=Theme.BG_CARD,
-                    border=ft.border.all(1, Theme.BORDER),
+                    border=ft.Border.all(1, Theme.BORDER),
                     border_radius=8,
                 ),
                 settings_status,
@@ -677,7 +677,7 @@ class SocialSchedulerApp:
                 ft.Container(
                     content=ft.Text(post.status.value.upper(), size=10, weight=ft.FontWeight.W_600,
                                     color=get_status_color(post.status)),
-                    padding=ft.padding.symmetric(horizontal=6, vertical=2),
+                    padding=ft.Padding.symmetric(horizontal=6, vertical=2),
                     bgcolor=get_status_color(post.status) + "22",
                     border_radius=4,
                 ),
@@ -762,7 +762,7 @@ class SocialSchedulerApp:
                             on_click=lambda _, aid=acct.id: self._on_delete_account(aid),
                         ),
                     ]),
-                    padding=ft.padding.symmetric(horizontal=8, vertical=4),
+                    padding=ft.Padding.symmetric(horizontal=8, vertical=4),
                     bgcolor=Theme.BG_INPUT,
                     border_radius=4,
                 )
