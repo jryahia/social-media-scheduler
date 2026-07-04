@@ -11,6 +11,7 @@ Built with **Flet** (Python) — works on macOS, Windows, and Linux.
 - **📊 Analytics** — Track total posts, success rates, and per-platform breakdowns
 - **⚙ Settings** — Manage platform accounts, configure the scheduler, export data
 - **🧵 Thread Support** — Multi-post threads for platforms that support them
+- **🔎 Xquik Source Context** — Optionally add live X examples to scheduled threads
 - **🔄 Recurring Posts** — Cron-based scheduling for recurring content
 - **🎨 Dark Theme** — Professional dark UI with platform-specific colors
 
@@ -37,6 +38,18 @@ pip install -r requirements.txt
 # Run the app
 python3 src/main.py
 ```
+
+Optional Xquik setup for source context:
+
+```bash
+export XQUIK_API_KEY="your_xquik_api_key"
+export XQUIK_API_BASE_URL="https://xquik.com/api/v1"
+```
+
+When `XQUIK_API_KEY` is set, the Schedule tab can use the optional Xquik Topic
+field to fetch recent X examples and add them as thread source notes. The app
+stores data in the current project directory by default. Set
+`SOCIAL_SCHEDULER_HOME` to choose a different config and database directory.
 
 ## Project Structure
 
