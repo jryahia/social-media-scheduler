@@ -6,6 +6,7 @@ Cross-platform desktop app for scheduling posts across 7 social platforms.
 Usage:
     python3 src/main.py
 """
+import logging
 import sys
 import os
 
@@ -17,6 +18,8 @@ if os.path.exists(APP_DIR):
 import flet as ft
 
 from src.ui.app import SocialSchedulerApp
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -43,7 +46,7 @@ if __name__ == "__main__":
         import flet
         import apscheduler
     except ImportError:
-        print("Installing dependencies...")
+        logger.info("Installing dependencies...")
         import subprocess
         subprocess.check_call(
             [sys.executable, "-m", "pip", "install", "-r",

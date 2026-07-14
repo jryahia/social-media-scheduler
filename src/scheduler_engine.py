@@ -1,6 +1,7 @@
 """
 Scheduler engine — uses APScheduler to dispatch posts at scheduled times.
 """
+import logging
 import threading
 import time
 from datetime import datetime
@@ -15,6 +16,8 @@ from .database import (
     update_post_engagement,
 )
 from .platforms.factory import get_platform_handler, get_all_platforms
+
+logger = logging.getLogger(__name__)
 
 
 class SchedulerEngine:
@@ -43,7 +46,7 @@ class SchedulerEngine:
             try:
                 cb(post)
             except Exception as e:
-                print(f"[Scheduler] Callback error: {e}")
+                logger.error(f"[Scheduler] Callback error: {e}")
 
     def start(self):
         """Start the background scheduler."""
@@ -59,14 +62,14 @@ class SchedulerEngine:
             replace_existing=True,
         )
         self.scheduler.start()
-        print(f"[Scheduler] Started with {self.interval}s check interval")
+        logger.info(f"[Scheduler] Started with {self.interval}s check interval")
 
     def stop(self):
         """Stop the background scheduler."""
         self._running = False
         if self.scheduler.running:
             self.scheduler.shutdown(wait=False)
-        print("[Scheduler] Stopped")
+        logger.info("[Scheduler] Stopped")
 
     def schedule_post(self, post: ScheduledPost) -> bool:
         """Add a post to the schedule."""
@@ -75,7 +78,7 @@ class SchedulerEngine:
         save_post(post)
         with self._lock:
             self._queue.append(post)
-        print(f"[Scheduler] Scheduled post #{post.id} for {post.platform.value}")
+        logger.info(f"[Scheduler] Scheduled post #{post.id} for {post.platform.value}")
         return True
 
     def cancel_post(self, post_id: int) -> bool:
@@ -84,7 +87,7 @@ class SchedulerEngine:
         delete_post(post_id)
         with self._lock:
             self._queue = [p for p in self._queue if p.id != post_id]
-        print(f"[Scheduler] Cancelled post #{post_id}")
+        logger.info(f"[Scheduler] Cancelled post #{post_id}")
         return True
 
     def get_queue(self) -> List[ScheduledPost]:
@@ -108,11 +111,11 @@ class SchedulerEngine:
                     self._dispatch_post(post)
 
         except Exception as e:
-            print(f"[Scheduler] Check error: {e}")
+            logger.error(f"[Scheduler] Check error: {e}")
 
     def _dispatch_post(self, post: ScheduledPost):
         """Dispatch a single post to its platform."""
-        print(f"[Scheduler] Dispatching post #{post.id} to {post.platform.value}")
+        logger.info(f"[Scheduler] Dispatching post #{post.id} to {post.platform.value}")
 
         # Mark as posting
         post.status = PostStatus.POSTING
@@ -146,13 +149,13 @@ class SchedulerEngine:
                 update_post_engagement(post.id, post.engagement)
 
                 self._notify("on_post_success", post)
-                print(f"[Scheduler] ✅ Post #{post.id} to {post.platform.value} succeeded")
+                logger.info(f"[Scheduler] ✅ Post #{post.id} to {post.platform.value} succeeded")
             else:
                 raise Exception("Platform handler returned False")
 
         except Exception as e:
             error_msg = str(e)[:200]
-            print(f"[Scheduler] ❌ Post #{post.id} to {post.platform.value} failed: {error_msg}")
+            logger.error(f"[Scheduler] ❌ Post #{post.id} to {post.platform.value} failed: {error_msg}")
 
             post.status = PostStatus.FAILED
             post.error_message = error_msg

@@ -1,6 +1,7 @@
 """
 Main Flet UI for Social Media Scheduler Pro — 4-tab dark-themed interface.
 """
+import logging
 import threading
 from datetime import datetime
 from typing import List, Optional
@@ -22,6 +23,8 @@ from .components import (
     Theme, build_post_card, build_platform_badge, build_schedule_form,
     build_analytics_card, build_status_bar,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class SocialSchedulerApp:
@@ -198,7 +201,7 @@ class SocialSchedulerApp:
             self._update_status(f"✅ {platform.value.capitalize()} post scheduled!")
         except Exception as e:
             self._update_status(f"❌ Error: {str(e)[:60]}", Theme.ACCENT_RED)
-            print(f"[App] Schedule error: {e}")
+            logger.error(f"[App] Schedule error: {e}")
 
     def _on_refresh_upcoming(self, e=None):
         self._refresh_upcoming()

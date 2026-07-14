@@ -1,9 +1,12 @@
 """
 TikTok platform handler.
 """
+import logging
 from typing import Optional, Dict, Any
 
 from .base import BasePlatform
+
+logger = logging.getLogger(__name__)
 
 
 class TikTokPlatform(BasePlatform):
@@ -17,20 +20,20 @@ class TikTokPlatform(BasePlatform):
         """Simulate posting to TikTok."""
         preview = content[:50].replace("\n", " ")
         media_info = f" with media: {media_path}" if media_path else ""
-        print(f"TIKTOK: Uploading video: {preview}...{media_info} [SIMULATED]")
+        logger.info(f"TIKTOK: Uploading video: {preview}...{media_info} [SIMULATED]")
         return True
 
     def validate_credentials(self) -> bool:
         """Simulate credential validation."""
-        print("TIKTOK: API credentials validated [SIMULATED]")
+        logger.info("TIKTOK: API credentials validated [SIMULATED]")
         return True
 
     def get_engagement(self, post_id: str) -> Dict[str, Any]:
         """Return mock engagement data."""
         import random
         return {
-            "likes": random.randint(50, 5000),
+            "likes": random.randint(0, 1000),
             "retweets": 0,
-            "replies": random.randint(5, 300),
-            "impressions": random.randint(1000, 100000),
+            "replies": random.randint(0, 50),
+            "impressions": random.randint(200, 20000),
         }

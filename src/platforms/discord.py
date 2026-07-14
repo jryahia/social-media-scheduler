@@ -1,9 +1,12 @@
 """
 Discord platform handler.
 """
+import logging
 from typing import Optional, Dict, Any
 
 from .base import BasePlatform
+
+logger = logging.getLogger(__name__)
 
 
 class DiscordPlatform(BasePlatform):
@@ -17,12 +20,12 @@ class DiscordPlatform(BasePlatform):
         """Simulate posting to Discord."""
         preview = content[:50].replace("\n", " ")
         media_info = f" with media: {media_path}" if media_path else ""
-        print(f"DISCORD: Sending message to channel: {preview}...{media_info} [SIMULATED]")
+        logger.info(f"DISCORD: Sending message to channel: {preview}...{media_info} [SIMULATED]")
         return True
 
     def validate_credentials(self) -> bool:
         """Simulate credential validation."""
-        print("DISCORD: Bot token validated [SIMULATED]")
+        logger.info("DISCORD: Bot token validated [SIMULATED]")
         return True
 
     def get_engagement(self, post_id: str) -> Dict[str, Any]:
