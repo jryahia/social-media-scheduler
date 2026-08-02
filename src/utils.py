@@ -9,7 +9,9 @@ from typing import Optional
 from .models import Platform
 
 # --- Paths ---
-PROJECT_DIR = os.path.expanduser("~/.hermes/profiles/codex/workspace/projects/social_scheduler")
+PROJECT_DIR = os.path.abspath(
+    os.environ.get("SOCIAL_SCHEDULER_HOME", os.getcwd())
+)
 DATA_DIR = os.path.join(PROJECT_DIR, "data")
 DB_PATH = os.path.join(DATA_DIR, "scheduler.db")
 CONFIG_PATH = os.path.join(PROJECT_DIR, "config.json")
@@ -27,18 +29,18 @@ def load_config() -> dict:
     config = DEFAULT_CONFIG.copy()
     try:
         if os.path.exists(CONFIG_PATH):
-            with open(CONFIG_PATH, "r") as f:
+            with open(CONFIG_PATH, "r", encoding="utf-8") as f:
                 saved = json.load(f)
                 config.update(saved)
-    except Exception:
-        pass
+    except (OSError, json.JSONDecodeError):
+        return config
     return config
 
 
 def save_config(config: dict):
     """Save configuration to JSON file."""
     os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
-    with open(CONFIG_PATH, "w") as f:
+    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2)
 
 

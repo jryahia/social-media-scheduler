@@ -19,6 +19,7 @@ from ..utils import (
     load_config, save_config, format_time_ago, get_platform_color,
     get_platform_emoji, get_status_color,
 )
+from ..xquik import build_xquik_source_notes
 from .components import (
     Theme, build_post_card, build_platform_badge, build_schedule_form,
     build_analytics_card, build_status_bar,
@@ -183,6 +184,10 @@ class SocialSchedulerApp:
         try:
             platform = Platform(data["platform"])
             now = datetime.now().isoformat()
+            thread_posts = list(data.get("thread_posts", []))
+            xquik_topic = data.get("xquik_topic")
+            xquik_notes = build_xquik_source_notes(xquik_topic) if xquik_topic else []
+            thread_posts.extend(xquik_notes)
 
             post = ScheduledPost(
                 platform=platform,
@@ -191,14 +196,15 @@ class SocialSchedulerApp:
                 scheduled_at=data.get("scheduled_at"),
                 status=PostStatus.SCHEDULED if data.get("scheduled_at") else PostStatus.DRAFT,
                 created_at=now,
-                thread_posts=data.get("thread_posts", []),
+                thread_posts=thread_posts,
                 recurring=data.get("recurring"),
             )
 
             save_post(post)
             self.scheduler.schedule_post(post)
             self._refresh_upcoming()
-            self._update_status(f"✅ {platform.value.capitalize()} post scheduled!")
+            suffix = f" with {len(xquik_notes)} Xquik sources" if xquik_notes else ""
+            self._update_status(f"✅ {platform.value.capitalize()} post scheduled{suffix}!")
         except Exception as e:
             self._update_status(f"❌ Error: {str(e)[:60]}", Theme.ACCENT_RED)
             logger.error(f"[App] Schedule error: {e}")

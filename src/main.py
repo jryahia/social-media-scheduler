@@ -11,7 +11,7 @@ import sys
 import os
 
 # Ensure we're in the right directory
-APP_DIR = os.path.expanduser("~/.hermes/profiles/codex/workspace/projects/social_scheduler")
+APP_DIR = os.path.abspath(os.environ.get("SOCIAL_SCHEDULER_HOME", os.getcwd()))
 if os.path.exists(APP_DIR):
     sys.path.insert(0, APP_DIR)
 

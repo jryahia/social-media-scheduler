@@ -2,6 +2,7 @@
 UI components for Social Media Scheduler Pro.
 """
 import flet as ft
+from datetime import datetime
 from typing import Callable, List, Optional
 
 from ..models import ScheduledPost, PostStatus, Platform
@@ -191,6 +192,18 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
         border_color=Theme.BORDER,
     )
 
+    xquik_topic_field = ft.TextField(
+        label="Xquik Topic (optional)",
+        label_style=ft.TextStyle(size=11, color=Theme.TEXT_MUTED),
+        hint_text="Product launch, customer pain point, or hashtag",
+        text_size=12,
+        dense=True,
+        width=300,
+        bgcolor=Theme.BG_INPUT,
+        color=Theme.TEXT_PRIMARY,
+        border_color=Theme.BORDER,
+    )
+
     # Recurring / Thread toggles
     recurring_field = ft.TextField(
         label="Cron (optional)",
@@ -235,12 +248,25 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
         scheduled_at = None
         if date_val and time_val:
             scheduled_at = f"{date_val}T{time_val}:00"
+            try:
+                datetime.fromisoformat(scheduled_at)
+            except ValueError:
+                status_text.value = "❌ Use YYYY-MM-DD and HH:MM"
+                status_text.color = Theme.ACCENT_RED
+                status_text.update()
+                return
+        elif date_val or time_val:
+            status_text.value = "❌ Date and time must be set together"
+            status_text.color = Theme.ACCENT_RED
+            status_text.update()
+            return
 
         on_submit({
             "platform": platform,
             "content": content,
             "media_path": media_field.value.strip() or None,
             "scheduled_at": scheduled_at,
+            "xquik_topic": xquik_topic_field.value.strip() if xquik_topic_field.value else None,
             "recurring": recurring_field.value.strip() or None,
             "thread_posts": [t.strip() for t in thread_field.value.split("\n") if t.strip()] if thread_field.value else [],
         })
@@ -250,6 +276,7 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
         media_field.value = ""
         date_field.value = ""
         time_field.value = ""
+        xquik_topic_field.value = ""
         recurring_field.value = ""
         thread_field.value = ""
         status_text.value = "✅ Post scheduled!"
@@ -270,6 +297,7 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
             ft.Row([
                 media_field,
                 recurring_field,
+                xquik_topic_field,
             ], wrap=True, spacing=8),
             # Date/Time row
             ft.Row([
