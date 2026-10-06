@@ -10,10 +10,8 @@ import logging
 import sys
 import os
 
-# Ensure we're in the right directory
-APP_DIR = os.path.expanduser("~/.hermes/profiles/codex/workspace/projects/social_scheduler")
-if os.path.exists(APP_DIR):
-    sys.path.insert(0, APP_DIR)
+APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, APP_DIR)
 
 import flet as ft
 

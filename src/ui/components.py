@@ -6,7 +6,7 @@ from typing import Callable, List, Optional
 
 from ..models import ScheduledPost, PostStatus, Platform
 from ..utils import (
-    get_platform_color, get_platform_emoji, get_platform_icon,
+    get_platform_color, get_platform_icon,
     get_status_color, format_time_ago,
 )
 
@@ -29,12 +29,11 @@ class Theme:
 
 
 def build_platform_badge(platform: Platform) -> ft.Container:
-    """Build a platform badge with emoji and color."""
+    """Build a platform badge with icon and color."""
     color = get_platform_color(platform)
-    emoji = get_platform_emoji(platform)
     return ft.Container(
         content=ft.Row([
-            ft.Text(emoji, size=12),
+            ft.Icon(get_platform_icon(platform), size=12, color=color),
             ft.Text(platform.value.capitalize(), size=10, weight=ft.FontWeight.W_600, color=Theme.TEXT_PRIMARY),
         ], spacing=4, alignment=ft.MainAxisAlignment.CENTER),
         padding=ft.Padding.symmetric(horizontal=8, vertical=3),
@@ -64,7 +63,7 @@ def build_post_card(post: ScheduledPost, on_click: Optional[Callable] = None,
     if on_delete and post.status in (PostStatus.DRAFT, PostStatus.SCHEDULED):
         actions_row.append(
             ft.IconButton(
-                icon=ft.icons.DELETE_OUTLINE,
+                icon=ft.Icons.DELETE_OUTLINE,
                 icon_size=16,
                 icon_color=Theme.TEXT_MUTED,
                 on_click=lambda _: on_delete(post),
@@ -86,7 +85,7 @@ def build_post_card(post: ScheduledPost, on_click: Optional[Callable] = None,
             ft.Text(post.preview, size=12, color=Theme.TEXT_PRIMARY, max_lines=2),
             # Meta row
             ft.Row([
-                ft.Icon(ft.icons.SCHEDULE, size=12, color=Theme.TEXT_MUTED),
+                ft.Icon(ft.Icons.SCHEDULE, size=12, color=Theme.TEXT_MUTED),
                 ft.Text(
                     post.scheduled_at.replace("T", " ") if post.scheduled_at else "No schedule",
                     size=10, color=Theme.TEXT_SECONDARY,
@@ -99,10 +98,10 @@ def build_post_card(post: ScheduledPost, on_click: Optional[Callable] = None,
             ]),
             # Engagement stats for posted items
             ft.Row([
-                ft.Text(f"❤️ {post.engagement.get('likes', 0)}", size=10, color=Theme.TEXT_SECONDARY),
-                ft.Text(f"🔁 {post.engagement.get('retweets', 0)}", size=10, color=Theme.TEXT_SECONDARY),
-                ft.Text(f"💬 {post.engagement.get('replies', 0)}", size=10, color=Theme.TEXT_SECONDARY),
-                ft.Text(f"👁 {post.engagement.get('impressions', 0)}", size=10, color=Theme.TEXT_SECONDARY),
+                ft.Text(f"{post.engagement.get('likes', 0)}", size=10, color=Theme.TEXT_SECONDARY),
+                ft.Text(f"{post.engagement.get('retweets', 0)}", size=10, color=Theme.TEXT_SECONDARY),
+                ft.Text(f"{post.engagement.get('replies', 0)}", size=10, color=Theme.TEXT_SECONDARY),
+                ft.Text(f"{post.engagement.get('impressions', 0)}", size=10, color=Theme.TEXT_SECONDARY),
             ], spacing=8) if post.status == PostStatus.POSTED else ft.Container(),
             # Error message
             ft.Text(post.error_message or "", size=10, color=Theme.ACCENT_RED) if post.error_message else ft.Container(),
@@ -123,13 +122,13 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
         label="Platform",
         label_style=ft.TextStyle(size=11, color=Theme.TEXT_MUTED),
         options=[
-            ft.dropdown.Option("twitter", "🐦 Twitter / X"),
-            ft.dropdown.Option("telegram", "✈️ Telegram"),
-            ft.dropdown.Option("reddit", "🤖 Reddit"),
-            ft.dropdown.Option("discord", "🎮 Discord"),
-            ft.dropdown.Option("instagram", "📸 Instagram"),
-            ft.dropdown.Option("linkedin", "💼 LinkedIn"),
-            ft.dropdown.Option("tiktok", "🎵 TikTok"),
+            ft.dropdown.Option("twitter", "Twitter / X"),
+            ft.dropdown.Option("telegram", "Telegram"),
+            ft.dropdown.Option("reddit", "Reddit"),
+            ft.dropdown.Option("discord", "Discord"),
+            ft.dropdown.Option("instagram", "Instagram"),
+            ft.dropdown.Option("linkedin", "LinkedIn"),
+            ft.dropdown.Option("tiktok", "TikTok"),
         ],
         value="twitter",
         width=200,
@@ -225,7 +224,7 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
         platform = platform_dropdown.value
         content = content_field.value.strip()
         if not content:
-            status_text.value = "❌ Content is required"
+            status_text.value = "Content is required"
             status_text.color = Theme.ACCENT_RED
             status_text.update()
             return
@@ -252,13 +251,13 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
         time_field.value = ""
         recurring_field.value = ""
         thread_field.value = ""
-        status_text.value = "✅ Post scheduled!"
+        status_text.value = "Post scheduled!"
         status_text.color = Theme.ACCENT_GREEN
         status_text.update()
 
     return ft.Container(
         content=ft.Column([
-            ft.Text("📝 Schedule a New Post", weight=ft.FontWeight.BOLD, size=16, color=Theme.TEXT_PRIMARY),
+            ft.Text("Schedule a New Post", weight=ft.FontWeight.BOLD, size=16, color=Theme.TEXT_PRIMARY),
             ft.Divider(color=Theme.BORDER, height=1),
             # Platform + Content
             ft.Row([
@@ -277,7 +276,7 @@ def build_schedule_form(on_submit: Callable) -> ft.Container:
                 time_field,
                 ft.Container(expand=True),
                 ft.ElevatedButton(
-                    "📅 Schedule Post",
+                    "Schedule Post",
                     on_click=on_schedule_click,
                     bgcolor=Theme.ACCENT_GREEN + "22",
                     color=Theme.ACCENT_GREEN,
@@ -322,7 +321,7 @@ def build_status_bar(text: str) -> ft.Container:
     """Build a status bar at the bottom."""
     return ft.Container(
         content=ft.Row([
-            ft.Icon(ft.icons.CIRCLE, size=8, color=Theme.ACCENT_GREEN),
+            ft.Icon(ft.Icons.CIRCLE, size=8, color=Theme.ACCENT_GREEN),
             ft.Text(text, size=10, color=Theme.TEXT_SECONDARY),
         ], spacing=4),
         padding=ft.Padding.symmetric(horizontal=12, vertical=6),

@@ -17,7 +17,7 @@ from ..database import (
 from ..scheduler_engine import SchedulerEngine
 from ..utils import (
     load_config, save_config, format_time_ago, get_platform_color,
-    get_platform_emoji, get_status_color,
+    get_platform_icon, get_status_color,
 )
 from .components import (
     Theme, build_post_card, build_platform_badge, build_schedule_form,
@@ -86,8 +86,6 @@ class SocialSchedulerApp:
                 on_primary=Theme.BG_DARK,
                 surface=Theme.BG_CARD,
                 on_surface=Theme.TEXT_PRIMARY,
-                background=Theme.BG_DARK,
-                on_background=Theme.TEXT_PRIMARY,
             ),
         )
 
@@ -99,28 +97,35 @@ class SocialSchedulerApp:
         """Build the complete UI with tabs."""
         tabs = ft.Tabs(
             selected_index=0,
+            length=4,
             animation_duration=300,
-            tabs=[
-                ft.Tab(
-                    text="  📅 Schedule  ",
-                    content=self._build_schedule_tab(),
-                ),
-                ft.Tab(
-                    text="  📋 Queue  ",
-                    content=self._build_queue_tab(),
-                ),
-                ft.Tab(
-                    text="  📊 Analytics  ",
-                    content=self._build_analytics_tab(),
-                ),
-                ft.Tab(
-                    text="  ⚙ Settings  ",
-                    content=self._build_settings_tab(),
-                ),
-            ],
-            label_color=Theme.TEXT_PRIMARY,
-            unselected_label_color=Theme.TEXT_MUTED,
-            indicator_color=Theme.ACCENT_GREEN,
+            expand=True,
+            content=ft.Column(
+                expand=True,
+                spacing=0,
+                controls=[
+                    ft.TabBar(
+                        tabs=[
+                            ft.Tab(label="Schedule"),
+                            ft.Tab(label="Queue"),
+                            ft.Tab(label="Analytics"),
+                            ft.Tab(label="Settings"),
+                        ],
+                        label_color=Theme.TEXT_PRIMARY,
+                        unselected_label_color=Theme.TEXT_MUTED,
+                        indicator_color=Theme.ACCENT_GREEN,
+                    ),
+                    ft.TabBarView(
+                        expand=True,
+                        controls=[
+                            self._build_schedule_tab(),
+                            self._build_queue_tab(),
+                            self._build_analytics_tab(),
+                            self._build_settings_tab(),
+                        ],
+                    ),
+                ],
+            ),
         )
 
         return ft.Container(
@@ -128,7 +133,7 @@ class SocialSchedulerApp:
                 # Header
                 ft.Container(
                     content=ft.Row([
-                        ft.Icon(ft.icons.SCHEDULE_SEND, color=Theme.ACCENT_GREEN, size=28),
+                        ft.Icon(ft.Icons.SCHEDULE_SEND, color=Theme.ACCENT_GREEN, size=28),
                         ft.Text("Social Media Scheduler Pro", weight=ft.FontWeight.BOLD, size=20, color=Theme.TEXT_PRIMARY),
                         ft.Container(expand=True),
                         self.scheduler_status,
@@ -165,7 +170,7 @@ class SocialSchedulerApp:
                             self.upcoming_header,
                             ft.Container(expand=True),
                             ft.TextButton(
-                                "🔄 Refresh",
+                                "Refresh",
                                 on_click=self._on_refresh_upcoming,
                                 style=ft.ButtonStyle(color=Theme.ACCENT_BLUE, text_style=ft.TextStyle(size=11)),
                             ),
@@ -198,9 +203,9 @@ class SocialSchedulerApp:
             save_post(post)
             self.scheduler.schedule_post(post)
             self._refresh_upcoming()
-            self._update_status(f"✅ {platform.value.capitalize()} post scheduled!")
+            self._update_status(f"{platform.value.capitalize()} post scheduled!")
         except Exception as e:
-            self._update_status(f"❌ Error: {str(e)[:60]}", Theme.ACCENT_RED)
+            self._update_status(f"Error: {str(e)[:60]}", Theme.ACCENT_RED)
             logger.error(f"[App] Schedule error: {e}")
 
     def _on_refresh_upcoming(self, e=None):
@@ -215,11 +220,11 @@ class SocialSchedulerApp:
             self.upcoming_list_view.controls.append(
                 ft.Container(
                     content=ft.Column([
-                        ft.Icon(ft.icons.POST_ADD, size=48, color=Theme.TEXT_MUTED),
+                        ft.Icon(ft.Icons.POST_ADD, size=48, color=Theme.TEXT_MUTED),
                         ft.Text("No upcoming posts", size=14, color=Theme.TEXT_SECONDARY),
                         ft.Text("Use the form above to schedule your first post!", size=11, color=Theme.TEXT_MUTED),
                     ], alignment=ft.MainAxisAlignment.CENTER, spacing=8, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    alignment=ft.alignment.center,
+                    alignment=ft.Alignment.CENTER,
                     expand=True,
                 )
             )
@@ -247,7 +252,7 @@ class SocialSchedulerApp:
         return ft.Container(
             content=ft.Column([
                 ft.Row([
-                    ft.TextButton("🔄 Refresh All", on_click=self._on_refresh_queue, style=ft.ButtonStyle(color=Theme.ACCENT_BLUE, text_style=ft.TextStyle(size=11))),
+                    ft.TextButton("Refresh All", on_click=self._on_refresh_queue, style=ft.ButtonStyle(color=Theme.ACCENT_BLUE, text_style=ft.TextStyle(size=11))),
                 ]),
                 # Pending section
                 ft.Container(
@@ -295,7 +300,7 @@ class SocialSchedulerApp:
             self.pending_list_view.controls.append(
                 ft.Text("No pending posts", size=11, color=Theme.TEXT_MUTED)
             )
-        self.pending_header.value = f"📋 Pending ({len(pending)})"
+        self.pending_header.value = f"Pending ({len(pending)})"
 
         # Posting
         self.posting_list_view.controls.clear()
@@ -307,7 +312,7 @@ class SocialSchedulerApp:
             self.posting_list_view.controls.append(
                 ft.Text("Nothing currently posting", size=11, color=Theme.TEXT_MUTED)
             )
-        self.posting_header.value = f"🔄 Posting ({len(posting)})"
+        self.posting_header.value = f"Posting ({len(posting)})"
 
         # History (posted + failed)
         self.history_list_view.controls.clear()
@@ -322,7 +327,7 @@ class SocialSchedulerApp:
             self.history_list_view.controls.append(
                 ft.Text("No post history yet", size=11, color=Theme.TEXT_MUTED)
             )
-        self.history_header.value = f"📜 History ({len(all_history)})"
+        self.history_header.value = f"History ({len(all_history)})"
 
         self.pending_header.update()
         self.posting_header.update()
@@ -341,9 +346,9 @@ class SocialSchedulerApp:
         return ft.Container(
             content=ft.Column([
                 ft.Row([
-                    ft.Text("📊 Analytics Dashboard", weight=ft.FontWeight.BOLD, size=16, color=Theme.TEXT_PRIMARY),
+                    ft.Text("Analytics Dashboard", weight=ft.FontWeight.BOLD, size=16, color=Theme.TEXT_PRIMARY),
                     ft.Container(expand=True),
-                    ft.TextButton("🔄 Refresh", on_click=self._on_refresh_analytics, style=ft.ButtonStyle(color=Theme.ACCENT_BLUE, text_style=ft.TextStyle(size=11))),
+                    ft.TextButton("Refresh", on_click=self._on_refresh_analytics, style=ft.ButtonStyle(color=Theme.ACCENT_BLUE, text_style=ft.TextStyle(size=11))),
                 ]),
                 # Summary cards
                 self.analytics_cards_row,
@@ -383,10 +388,10 @@ class SocialSchedulerApp:
         # Summary cards
         self.analytics_cards_row.controls.clear()
         cards_data = [
-            ("Total Posts", str(analytics.get("total_posts", 0)), ft.icons.POST_ADD),
-            ("Posted Today", str(analytics.get("posted_today", 0)), ft.icons.TODAY),
-            ("Success Rate", f"{analytics.get('success_rate', 0)}%", ft.icons.CHECK_CIRCLE),
-            ("Active Platforms", str(analytics.get("active_platforms", 0)), ft.icons.PUBLIC),
+            ("Total Posts", str(analytics.get("total_posts", 0)), ft.Icons.POST_ADD),
+            ("Posted Today", str(analytics.get("posted_today", 0)), ft.Icons.TODAY),
+            ("Success Rate", f"{analytics.get('success_rate', 0)}%", ft.Icons.CHECK_CIRCLE),
+            ("Active Platforms", str(analytics.get("active_platforms", 0)), ft.Icons.PUBLIC),
         ]
         for label, value, icon in cards_data:
             self.analytics_cards_row.controls.append(
@@ -402,11 +407,11 @@ class SocialSchedulerApp:
             posted = item.get("posted_at", "")
             success = item.get("success", 1)
             color = Theme.ACCENT_GREEN if success else Theme.ACCENT_RED
-            icon = "✅" if success else "❌"
+            icon = ft.Icons.CHECK_CIRCLE_OUTLINE if success else ft.Icons.ERROR_OUTLINE
             self.activity_list_view.controls.append(
                 ft.Container(
                     content=ft.Row([
-                        ft.Text(f"{icon}", size=14),
+                        ft.Icon(icon, size=14, color=color),
                         ft.Text(f"[{platform}] {content}", size=11, color=Theme.TEXT_PRIMARY, max_lines=1),
                         ft.Container(expand=True),
                         ft.Text(format_time_ago(posted), size=10, color=Theme.TEXT_MUTED),
@@ -426,15 +431,16 @@ class SocialSchedulerApp:
         for plat, count in sorted(per_platform.items(), key=lambda x: x[1], reverse=True):
             try:
                 p = Platform(plat)
-                emoji = get_platform_emoji(p)
+                icon = get_platform_icon(p)
                 color = get_platform_color(p)
             except ValueError:
-                emoji = "📱"
+                icon = "share"
                 color = Theme.TEXT_SECONDARY
             self.platform_breakdown_view.controls.append(
                 ft.Container(
                     content=ft.Row([
-                        ft.Text(f"{emoji} {plat.capitalize()}", size=12, color=color),
+                        ft.Icon(icon, size=14, color=color),
+                        ft.Text(plat.capitalize(), size=12, color=color),
                         ft.Container(expand=True),
                         ft.Container(
                             content=ft.Text(str(count), size=12, weight=ft.FontWeight.W_600, color=Theme.TEXT_PRIMARY),
@@ -480,13 +486,13 @@ class SocialSchedulerApp:
             label="Platform",
             label_style=ft.TextStyle(size=11, color=Theme.TEXT_MUTED),
             options=[
-                ft.dropdown.Option("twitter", "🐦 Twitter / X"),
-                ft.dropdown.Option("telegram", "✈️ Telegram"),
-                ft.dropdown.Option("reddit", "🤖 Reddit"),
-                ft.dropdown.Option("discord", "🎮 Discord"),
-                ft.dropdown.Option("instagram", "📸 Instagram"),
-                ft.dropdown.Option("linkedin", "💼 LinkedIn"),
-                ft.dropdown.Option("tiktok", "🎵 TikTok"),
+                ft.dropdown.Option("twitter", "Twitter / X"),
+                ft.dropdown.Option("telegram", "Telegram"),
+                ft.dropdown.Option("reddit", "Reddit"),
+                ft.dropdown.Option("discord", "Discord"),
+                ft.dropdown.Option("instagram", "Instagram"),
+                ft.dropdown.Option("linkedin", "LinkedIn"),
+                ft.dropdown.Option("tiktok", "TikTok"),
             ],
             value="twitter",
             width=180,
@@ -526,16 +532,16 @@ class SocialSchedulerApp:
             try:
                 interval = int(self.interval_field.value)
                 if interval < 5:
-                    settings_status.value = "❌ Minimum interval is 5 seconds"
+                    settings_status.value = "Minimum interval is 5 seconds"
                     settings_status.color = Theme.ACCENT_RED
                     settings_status.update()
                     return
                 self.config["scheduler_interval"] = interval
                 save_config(self.config)
-                settings_status.value = "✅ Settings saved! Restart app for interval change."
+                settings_status.value = "Settings saved! Restart app for interval change."
                 settings_status.color = Theme.ACCENT_GREEN
             except ValueError:
-                settings_status.value = "❌ Invalid interval value"
+                settings_status.value = "Invalid interval value"
                 settings_status.color = Theme.ACCENT_RED
             settings_status.update()
 
@@ -545,7 +551,7 @@ class SocialSchedulerApp:
             name = self.add_account_name.value.strip()
             api_key = self.add_account_api_key.value.strip()
             if not name:
-                settings_status.value = "❌ Account name is required"
+                settings_status.value = "Account name is required"
                 settings_status.color = Theme.ACCENT_RED
                 settings_status.update()
                 return
@@ -559,7 +565,7 @@ class SocialSchedulerApp:
             self._refresh_accounts()
             self.add_account_name.value = ""
             self.add_account_api_key.value = ""
-            settings_status.value = f"✅ Added {name} ({platform})"
+            settings_status.value = f"Added {name} ({platform})"
             settings_status.color = Theme.ACCENT_GREEN
             settings_status.update()
 
@@ -567,19 +573,19 @@ class SocialSchedulerApp:
             """Clear all post history."""
             clear_post_history()
             self._refresh_all()
-            settings_status.value = "✅ History cleared"
+            settings_status.value = "History cleared"
             settings_status.color = Theme.ACCENT_GREEN
             settings_status.update()
 
         def on_export_data(e):
             """Export data (simulated)."""
-            settings_status.value = "📦 Data exported to data/export.json (simulated)"
+            settings_status.value = "Data exported to data/export.json (simulated)"
             settings_status.color = Theme.ACCENT_BLUE
             settings_status.update()
 
         return ft.Container(
             content=ft.Column([
-                ft.Text("⚙ Settings", weight=ft.FontWeight.BOLD, size=16, color=Theme.TEXT_PRIMARY),
+                ft.Text("Settings", weight=ft.FontWeight.BOLD, size=16, color=Theme.TEXT_PRIMARY),
                 ft.Divider(color=Theme.BORDER, height=1),
                 # Scheduler section
                 ft.Container(
@@ -588,7 +594,7 @@ class SocialSchedulerApp:
                         ft.Row([
                             self.interval_field,
                             ft.ElevatedButton(
-                                "💾 Save",
+                                "Save",
                                 on_click=on_save_settings,
                                 bgcolor=Theme.ACCENT_BLUE + "22",
                                 color=Theme.ACCENT_BLUE,
@@ -610,7 +616,7 @@ class SocialSchedulerApp:
                             self.add_account_name,
                             self.add_account_api_key,
                             ft.ElevatedButton(
-                                "➕ Add",
+                                "Add",
                                 on_click=on_add_account,
                                 bgcolor=Theme.ACCENT_GREEN + "22",
                                 color=Theme.ACCENT_GREEN,
@@ -631,14 +637,14 @@ class SocialSchedulerApp:
                         ft.Text("Actions", weight=ft.FontWeight.W_600, size=14, color=Theme.TEXT_SECONDARY),
                         ft.Row([
                             ft.ElevatedButton(
-                                "🗑 Clear History",
+                                "Clear History",
                                 on_click=on_clear_history,
                                 bgcolor=Theme.ACCENT_RED + "22",
                                 color=Theme.ACCENT_RED,
                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
                             ),
                             ft.ElevatedButton(
-                                "📦 Export Data",
+                                "Export Data",
                                 on_click=on_export_data,
                                 bgcolor=Theme.ACCENT_AMBER + "22",
                                 color=Theme.ACCENT_AMBER,
@@ -690,16 +696,16 @@ class SocialSchedulerApp:
         ]
 
         if post.thread_posts:
-            items.append(ft.Text(f"🧵 Thread: {len(post.thread_posts)} additional posts", size=11, color=Theme.TEXT_SECONDARY))
+            items.append(ft.Text(f"Thread: {len(post.thread_posts)} additional posts", size=11, color=Theme.TEXT_SECONDARY))
         if post.scheduled_at:
-            items.append(ft.Text(f"📅 Scheduled: {post.scheduled_at.replace('T', ' ')}", size=11, color=Theme.TEXT_SECONDARY))
+            items.append(ft.Text(f"Scheduled: {post.scheduled_at.replace('T', ' ')}", size=11, color=Theme.TEXT_SECONDARY))
         if post.posted_at:
-            items.append(ft.Text(f"✅ Posted: {post.posted_at.replace('T', ' ')}", size=11, color=Theme.TEXT_SECONDARY))
-            items.append(ft.Text(f"❤️ {post.engagement.get('likes', 0)} Likes", size=11, color=Theme.TEXT_SECONDARY))
+            items.append(ft.Text(f"Posted: {post.posted_at.replace('T', ' ')}", size=11, color=Theme.TEXT_SECONDARY))
+            items.append(ft.Text(f"{post.engagement.get('likes', 0)} Likes", size=11, color=Theme.TEXT_SECONDARY))
         if post.error_message:
-            items.append(ft.Text(f"❌ Error: {post.error_message}", size=11, color=Theme.ACCENT_RED))
+            items.append(ft.Text(f"Error: {post.error_message}", size=11, color=Theme.ACCENT_RED))
         if post.recurring:
-            items.append(ft.Text(f"🔄 Recurring: {post.recurring}", size=11, color=Theme.ACCENT_AMBER))
+            items.append(ft.Text(f"Recurring: {post.recurring}", size=11, color=Theme.ACCENT_AMBER))
 
         dialog = ft.AlertDialog(
             title=ft.Text(f"Post #{post.id} — {post.platform.value.capitalize()}", weight=ft.FontWeight.BOLD, color=Theme.TEXT_PRIMARY),
@@ -718,21 +724,21 @@ class SocialSchedulerApp:
         """Handle post deletion."""
         self.scheduler.cancel_post(post.id)
         self._refresh_all()
-        self._update_status(f"🗑 Deleted post #{post.id}")
+        self._update_status(f"Deleted post #{post.id}")
 
     def _on_post_start(self, post: ScheduledPost):
         """Callback when a post starts posting."""
-        self._update_status(f"🔄 Posting to {post.platform.value}...", Theme.ACCENT_AMBER)
+        self._update_status(f"Posting to {post.platform.value}...", Theme.ACCENT_AMBER)
         self._refresh_queue()
 
     def _on_post_success(self, post: ScheduledPost):
         """Callback when a post succeeds."""
-        self._update_status(f"✅ Posted to {post.platform.value}!", Theme.ACCENT_GREEN)
+        self._update_status(f"Posted to {post.platform.value}!", Theme.ACCENT_GREEN)
         self._refresh_all()
 
     def _on_post_fail(self, post: ScheduledPost):
         """Callback when a post fails."""
-        self._update_status(f"❌ Failed to post to {post.platform.value}", Theme.ACCENT_RED)
+        self._update_status(f"Failed to post to {post.platform.value}", Theme.ACCENT_RED)
         self._refresh_all()
 
     # ===== Helpers =====
@@ -750,16 +756,16 @@ class SocialSchedulerApp:
         accounts = get_accounts()
         for acct in accounts:
             color = get_platform_color(acct.platform)
-            emoji = get_platform_emoji(acct.platform)
             self.accounts_list_view.controls.append(
                 ft.Container(
                     content=ft.Row([
-                        ft.Text(f"{emoji} {acct.name}", size=12, color=color),
+                        ft.Icon(get_platform_icon(acct.platform), size=14, color=color),
+                        ft.Text(acct.name, size=12, color=color),
                         ft.Text(f"({acct.platform.value})", size=10, color=Theme.TEXT_MUTED),
                         ft.Container(expand=True),
-                        ft.Text("🟢 Active" if acct.is_active else "🔴 Inactive", size=10, color=Theme.ACCENT_GREEN if acct.is_active else Theme.ACCENT_RED),
+                        ft.Text("Active" if acct.is_active else "Inactive", size=10, color=Theme.ACCENT_GREEN if acct.is_active else Theme.ACCENT_RED),
                         ft.IconButton(
-                            icon=ft.icons.DELETE_OUTLINE,
+                            icon=ft.Icons.DELETE_OUTLINE,
                             icon_size=14,
                             icon_color=Theme.TEXT_MUTED,
                             on_click=lambda _, aid=acct.id: self._on_delete_account(aid),

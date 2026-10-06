@@ -9,7 +9,7 @@ from typing import Optional
 from .models import Platform
 
 # --- Paths ---
-PROJECT_DIR = os.path.expanduser("~/.hermes/profiles/codex/workspace/projects/social_scheduler")
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_DIR, "data")
 DB_PATH = os.path.join(DATA_DIR, "scheduler.db")
 CONFIG_PATH = os.path.join(PROJECT_DIR, "config.json")
@@ -92,19 +92,6 @@ def get_platform_icon(platform: Platform) -> str:
     }
     return icons.get(platform, "share")
 
-
-def get_platform_emoji(platform: Platform) -> str:
-    """Get emoji for a social platform."""
-    emojis = {
-        Platform.TWITTER: "🐦",
-        Platform.TELEGRAM: "✈️",
-        Platform.REDDIT: "🤖",
-        Platform.DISCORD: "🎮",
-        Platform.INSTAGRAM: "📸",
-        Platform.LINKEDIN: "💼",
-        Platform.TIKTOK: "🎵",
-    }
-    return emojis.get(platform, "📱")
 
 
 def get_status_color(status) -> str:

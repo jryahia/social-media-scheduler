@@ -149,13 +149,13 @@ class SchedulerEngine:
                 update_post_engagement(post.id, post.engagement)
 
                 self._notify("on_post_success", post)
-                logger.info(f"[Scheduler] ✅ Post #{post.id} to {post.platform.value} succeeded")
+                logger.info(f"[Scheduler] Post #{post.id} to {post.platform.value} succeeded")
             else:
                 raise Exception("Platform handler returned False")
 
         except Exception as e:
             error_msg = str(e)[:200]
-            logger.error(f"[Scheduler] ❌ Post #{post.id} to {post.platform.value} failed: {error_msg}")
+            logger.error(f"[Scheduler] Post #{post.id} to {post.platform.value} failed: {error_msg}")
 
             post.status = PostStatus.FAILED
             post.error_message = error_msg
